@@ -23,7 +23,7 @@ namespace TravelNet.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(User user)
         {
-            if (user == null && user.UserName != null && user.Password != null)
+            if (user != null && user.UserName != null && user.Password != null)
             {
                 var userData = await GetUser(user.UserName, user.Password);
                 var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
@@ -35,9 +35,8 @@ namespace TravelNet.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                         new Claim("Id", user.UserId.ToString()),
-                        new Claim("Username", user.UserName),
+                        new Claim("UserName", user.UserName),
                         new Claim("Password", user.Password),
-                        new Claim("Email", user.Email),
 
                     };
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.key));
@@ -61,6 +60,7 @@ namespace TravelNet.Controllers
                 return BadRequest("Error");
             }
         }
+
         [HttpGet]
         public async Task<User> GetUser(string username, string password)
         {

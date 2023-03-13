@@ -15,8 +15,6 @@ namespace TravelNet.Models
 
         public string Password { get; set; }
 
-
-        public string Email { get; set; }
     }
 
     public class Jwt

@@ -19,13 +19,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(sw =>
 {
     sw.SwaggerDoc("v1", new OpenApiInfo { Title = "JWT", Version = "v1" });
-    sw.AddSecurityDefinition("Admin", new OpenApiSecurityScheme
+    sw.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Jwt User",
-        Name = "Auth",
+        Description = "Jwt Authorization",
+        Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Admin"
+        Scheme = "Bearer"
     });
     sw.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(sw =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Admin"
+                    Id = "Bearer"
                 }
             },
             new string[]{}
@@ -47,9 +47,11 @@ builder.Services.AddSwaggerGen(sw =>
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(jw =>
 {
+    jw.SaveToken = true;
+    jw.RequireHttpsMetadata = false;
     jw.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
+        ValidateIssuer = false,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
@@ -69,6 +71,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
